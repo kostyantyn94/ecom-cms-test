@@ -1,11 +1,11 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { authenticator } from "../services/auth.service";
-import { EAdminNavigation } from "../constants/navigation.constants";
+import {json, LoaderFunctionArgs} from '@remix-run/node';
+import {authenticator} from '~/.server/admin/services/auth.service';
+import {EAdminNavigation} from '~/.server/admin/constants/navigation.constant';
 
-export async function adminDashboardLoader({ request }: LoaderFunctionArgs) {
+export async function adminDashboardLoader({request}: LoaderFunctionArgs) {
   const user = await authenticator.isAuthenticated(request, {
     failureRedirect: EAdminNavigation.authLogin,
   });
 
-  return json({ user });
+  return json({user});
 }

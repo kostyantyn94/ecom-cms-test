@@ -15,13 +15,13 @@ datasource db {
 
 // Models
 model User {
-  id Int @id @default(autoincrement())
-  fullName String?
-  email String @unique
-  password String
-  role AdminRole @default(STUFF)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  fullName  String?
+  email     String    @unique
+  password  String
+  role      AdminRole @default(STUFF)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
 
