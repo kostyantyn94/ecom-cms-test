@@ -1,5 +1,5 @@
 import React from "react";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { adminDashboardLoader } from "~/.server/admin/loaders/dashboard.loader";
 import {
   BlockStack,
@@ -18,7 +18,12 @@ export const loader = adminDashboardLoader;
 export default function AdminUsersNew() {
   const data = useLoaderData<typeof loader>();
   const { user } = data;
+  const navigate = useNavigate();
   console.log(user);
+
+  const handleChangePass = () => {
+    navigate("/admin/auth/password");
+  };
 
   return (
     <Page
@@ -29,7 +34,7 @@ export default function AdminUsersNew() {
       actionGroups={[
         {
           title: "More actions",
-          actions: [{ content: "Change Password" }],
+          actions: [{ content: "Change Password", onAction: handleChangePass }],
         },
       ]}
     >
