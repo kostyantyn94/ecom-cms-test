@@ -1,56 +1,64 @@
-import React from "react";
-import { useLoaderData, useNavigate } from "@remix-run/react";
-import { adminDashboardLoader } from "~/.server/admin/loaders/dashboard.loader";
-import {
-  BlockStack,
-  Box,
-  Card,
-  Grid,
-  InlineStack,
-  Layout,
-  Page,
-  Text,
-} from "@shopify/polaris";
+import React, { useCallback, useState } from "react";
+import { useLoaderData } from "@remix-run/react";
+import { Modal, Page } from "@shopify/polaris";
 import { EAdminNavigation } from "~/admin/constants/navigation.constant";
+import { UsersSingle } from "~/admin/components/UsersSingle/UsersSingle";
+import { adminUsersSingleLoader } from "~/.server/admin/loaders/users.single.loader";
+import { adminUsersRoleAction } from "~/.server/admin/actions/users.role.action";
 
-export const loader = adminDashboardLoader;
+export const loader = adminUsersSingleLoader;
 
-export default function AdminUsersNew() {
-  const data = useLoaderData<typeof loader>();
-  const { user } = data;
-  const navigate = useNavigate();
-  console.log(user);
+export const action = adminUsersRoleAction;
 
-  const handleChangePass = () => {
-    navigate("/admin/auth/password");
-  };
+export default function AdminUsersSingle() {
+  const { user } = useLoaderData<typeof loader>();
+  const [isDeleteActive, setIsDeleteActive] = useState(false);
+
+  const toggleDeleteActive = useCallback(
+    () => setIsDeleteActive((active) => !active),
+    []
+  );
 
   return (
     <Page
-      title="User info"
+      title={user.fullName || ""}
       backAction={{
         url: EAdminNavigation.users,
       }}
-      actionGroups={[
+      secondaryActions={[
         {
-          title: "More actions",
-          actions: [{ content: "Change Password", onAction: handleChangePass }],
+          content: "Security",
+          accessibilityLabel: "Security",
+          url: `${EAdminNavigation.users}/${user.id}/security`,
+        },
+        {
+          content: "Delete user",
+          accessibilityLabel: "Delete user",
+          onAction: toggleDeleteActive,
         },
       ]}
     >
-      <Layout>
-        <Layout.Section>
-          <Card title="User details" sectioned>
-            <p>Fullname: {user.fullName}</p>
-            <p>Email: {user.email}</p>
-          </Card>
-        </Layout.Section>
-        <Layout.Section variant="oneThird">
-          <Card title="Roles" sectioned>
-            <p>Role: {user.role}</p>
-          </Card>
-        </Layout.Section>
-      </Layout>
+      <UsersSingle user={user} />
+      <Modal
+        size="small"
+        open={isDeleteActive}
+        onClose={toggleDeleteActive}
+        title="Are you sure you want to delete this user?"
+        primaryAction={{
+          content: "Confirm",
+          url: `${EAdminNavigation.users}/${user.id}/delete`,
+        }}
+        secondaryActions={[
+          {
+            content: "Cancel",
+            onAction: toggleDeleteActive,
+          },
+        ]}
+      >
+        <Modal.Section>
+          <p>After deleting this user you will not be able to get him back.</p>
+        </Modal.Section>
+      </Modal>
     </Page>
   );
 }

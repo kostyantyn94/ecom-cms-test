@@ -1,46 +1,25 @@
-import { useNavigate } from "@remix-run/react";
-import { TopBar, TopBarProps } from "@shopify/polaris";
-import { FC, useCallback, useState } from "react";
-import { EAdminNavigation } from "~/admin/constants/navigation.constant";
+import {TopBar, TopBarProps} from '@shopify/polaris';
+import {FC, useCallback, useState} from 'react';
+import {TUserDto} from '~/.server/admin/dto/user.dto';
+import {UserMenu} from '~/admin/components/AppBar/UserMenu';
+
 export interface AppBarProps {
-  onNavigationToggle: TopBarProps["onNavigationToggle"];
+  onNavigationToggle: TopBarProps['onNavigationToggle'];
+  user: TUserDto;
 }
 
-export const AppBar: FC<AppBarProps> = ({ onNavigationToggle, fullName }) => {
+export const AppBar: FC<AppBarProps> = ({onNavigationToggle, user}) => {
   const [userMenuActive, setUserMenuActive] = useState(false);
-  const navigate = useNavigate();
 
   const toggleUserMenuActive = useCallback(
     () => setUserMenuActive((userMenuActive) => !userMenuActive),
-    []
-  );
-
-  const handleLogout = () => {
-    console.log("Logout Clicked");
-    navigate(EAdminNavigation.authLogout);
-  };
-
-  const userMenuActions = [
-    {
-      items: [{ content: "Log out", onAction: handleLogout }],
-    },
-  ];
-
-  const userMenuMarkup = (
-    <TopBar.UserMenu
-      actions={userMenuActions}
-      name={fullName}
-      detail={"storeName"}
-      initials={fullName[0].toUpperCase()}
-      open={userMenuActive}
-      onToggle={toggleUserMenuActive}
-    />
+    [],
   );
 
   return (
     <TopBar
       showNavigationToggle
-      userMenu={userMenuMarkup}
+      userMenu={<UserMenu user={user} userMenuActive={userMenuActive} toggleUserMenuActive={toggleUserMenuActive}/>}
       onNavigationToggle={onNavigationToggle}
     />
   );
